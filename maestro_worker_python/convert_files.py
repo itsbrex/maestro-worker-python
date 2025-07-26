@@ -24,7 +24,7 @@ class FileToConvert:
     file_format: str
     output_file_path: str | None = None
     max_duration: int = 1200
-    sample_rate: int | None = None
+    sample_rate: int | None = 44100
 
 
 def convert_files(convert_files: List[FileToConvert]):
