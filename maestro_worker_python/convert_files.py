@@ -92,7 +92,7 @@ def convert_files_manager(*convert_files: FileToConvert) -> None | str | list[st
             obj.close()
 
 
-def _convert_to_wav(input_file_path, output_file_path, max_duration, sample_rate):
+def _convert_to_wav(input_file_path: str, output_file_path: str, max_duration: str, sample_rate: int | None = 44100):
     command_list = [
         "ffmpeg",
         "-y",
@@ -112,7 +112,7 @@ def _convert_to_wav(input_file_path, output_file_path, max_duration, sample_rate
     )
 
 
-def _convert_to_m4a(input_file_path, output_file_path, max_duration, sample_rate):
+def _convert_to_m4a(input_file_path: str, output_file_path: str, max_duration: str, sample_rate: int | None = 44100):
     command_list = [
         "ffmpeg",
         "-y",
