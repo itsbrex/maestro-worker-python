@@ -92,7 +92,7 @@ def convert_files_manager(*convert_files: FileToConvert) -> None | str | list[st
             obj.close()
 
 
-def _convert_to_wav(input_file_path: str, output_file_path: str, max_duration: str, sample_rate: int | None = 44100):
+def _convert_to_wav(input_file_path: str, output_file_path: str, max_duration: int, sample_rate: int | None = 44100):
     command_list = [
         "ffmpeg",
         "-y",
@@ -103,16 +103,17 @@ def _convert_to_wav(input_file_path: str, output_file_path: str, max_duration: s
         str(max_duration),
         "-i",
         str(input_file_path),
-        str(output_file_path),
     ]
+
     if sample_rate is not None:
-        command_list[9:9] = ["-ar", str(sample_rate)]
-    _run_subprocess(
-        command_list
-    )
+        command_list.extend(["-ar", str(sample_rate)])
+
+    command_list.append(str(output_file_path))
+
+    _run_subprocess(command_list)
 
 
-def _convert_to_m4a(input_file_path: str, output_file_path: str, max_duration: str, sample_rate: int | None = 44100):
+def _convert_to_m4a(input_file_path: str, output_file_path: str, max_duration: int, sample_rate: int | None = 44100):
     command_list = [
         "ffmpeg",
         "-y",
@@ -129,13 +130,14 @@ def _convert_to_m4a(input_file_path: str, output_file_path: str, max_duration: s
         "192k",
         "-movflags",
         "+faststart",
-        str(output_file_path),
     ]
+
     if sample_rate is not None:
-        command_list[13:13] = ["-ar", str(sample_rate)]
-    _run_subprocess(
-        command_list
-    )
+        command_list.extend(["-ar", str(sample_rate)])
+
+    command_list.append(str(output_file_path))
+
+    _run_subprocess(command_list)
 
 
 def _run_subprocess(command):
