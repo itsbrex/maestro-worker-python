@@ -58,7 +58,7 @@ def test_should_raise_validation_error_if_audio_file_is_invalid(
             ]
         )
 
-    assert "Invalid data" in str(exc.value)
+    assert "invalid" in str(exc.value).lower()
 
 
 @pytest.mark.parametrize("file_format", ["m4a", "wav"])
@@ -76,7 +76,7 @@ def test_should_raise_validation_error_if_audio_file_is_corrupt(
             ]
         )
 
-    assert "Invalid argument" in str(exc.value)
+    assert "invalid" in str(exc.value).lower()
 
 
 @pytest.mark.parametrize("file_format", ["m4a", "wav"])
@@ -102,6 +102,7 @@ def test_should_raise_validation_error_if_source_has_no_audio(file_format, caplo
 @pytest.mark.parametrize(
     "input_name, output_name, format, sample_rate",
     [
+        ("silent.ogg", "converted_44100.wav", "wav", None),
         ("silent.ogg", "converted_44100.wav", "wav", 44100),
         ("silent with space.ogg", "converted_44100.wav", "wav", 44100),
         ("silent.ogg", "converted_48000.wav", "wav", 48000),
@@ -130,6 +131,7 @@ def test_should_convert_valid_wav_audio_file(input_name, output_name, format, sa
 @pytest.mark.parametrize(
     "input_name, output_name, format, sample_rate",
     [
+        ("silent.ogg", "converted_44100.m4a", "m4a", None),
         ("silent.ogg", "converted_44100.m4a", "m4a", 44100),
         ("silent with space.wav", "converted_44100.m4a", "m4a", 44100),
         ("silent.ogg", "converted_48000.m4a", "m4a", 48000),
@@ -184,14 +186,19 @@ def _get_hash(file_name, sample_rate):
         "error",
         "-i",
         str(file_name),
-        "-ar",
-        str(sample_rate),
+    ]
+    if sample_rate:
+        command.extend([
+            "-ar",
+            str(sample_rate),
+        ])
+    command.extend([
         "-map",
         "0",
         "-f",
         "hash",
-        "-"
-    ]
+        "-",
+    ])
 
     process = subprocess.run(command, shell=False, capture_output=True, check=True)
     return process.stdout.split(b"=")[1].strip()

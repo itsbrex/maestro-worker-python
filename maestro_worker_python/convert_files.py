@@ -22,9 +22,9 @@ class FileConversionError(Exception):
 class FileToConvert:
     input_file_path: str
     file_format: str
-    output_file_path: str = None
+    output_file_path: str | None = None
     max_duration: int = 1200
-    sample_rate: int = 44100
+    sample_rate: int | None = 44100
 
 
 def convert_files(convert_files: List[FileToConvert]):
@@ -92,48 +92,52 @@ def convert_files_manager(*convert_files: FileToConvert) -> None | str | list[st
             obj.close()
 
 
-def _convert_to_wav(input_file_path, output_file_path, max_duration, sample_rate=44100):
-    _run_subprocess(
-        [
-            "ffmpeg",
-            "-y",
-            "-hide_banner",
-            "-loglevel",
-            "error",
-            "-t",
-            str(max_duration),
-            "-i",
-            str(input_file_path),
-            "-ar",
-            str(sample_rate),
-            str(output_file_path),
-        ]
-    )
+def _convert_to_wav(input_file_path: str, output_file_path: str, max_duration: int, sample_rate: int | None = 44100):
+    command_list = [
+        "ffmpeg",
+        "-y",
+        "-hide_banner",
+        "-loglevel",
+        "error",
+        "-t",
+        str(max_duration),
+        "-i",
+        str(input_file_path),
+    ]
+
+    if sample_rate is not None:
+        command_list.extend(["-ar", str(sample_rate)])
+
+    command_list.append(str(output_file_path))
+
+    _run_subprocess(command_list)
 
 
-def _convert_to_m4a(input_file_path, output_file_path, max_duration, sample_rate=44100):
-    _run_subprocess(
-        [
-            "ffmpeg",
-            "-y",
-            "-hide_banner",
-            "-loglevel",
-            "error",
-            "-t",
-            str(max_duration),
-            "-i",
-            str(input_file_path),
-            "-c:a",
-            "aac",
-            "-b:a",
-            "192k",
-            "-ar",
-            str(sample_rate),
-            "-movflags",
-            "+faststart",
-            str(output_file_path),
-        ]
-    )
+def _convert_to_m4a(input_file_path: str, output_file_path: str, max_duration: int, sample_rate: int | None = 44100):
+    command_list = [
+        "ffmpeg",
+        "-y",
+        "-hide_banner",
+        "-loglevel",
+        "error",
+        "-t",
+        str(max_duration),
+        "-i",
+        str(input_file_path),
+        "-c:a",
+        "aac",
+        "-b:a",
+        "192k",
+        "-movflags",
+        "+faststart",
+    ]
+
+    if sample_rate is not None:
+        command_list.extend(["-ar", str(sample_rate)])
+
+    command_list.append(str(output_file_path))
+
+    _run_subprocess(command_list)
 
 
 def _run_subprocess(command):
